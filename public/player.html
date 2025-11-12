@@ -291,8 +291,6 @@
 
     // 音声要素の作成
     const resultSound = new Audio('/sounds/cash-register-purchase-87313.mp3');
-    const reachSound = new Audio('/sounds/notification-22-270130.mp3');
-    const bingoSound = new Audio('/sounds/loud-fanfare-trumpet-effect-02-412049.mp3');
 
     // 参加ボタン
     document.getElementById('joinButton').addEventListener('click', () => {
@@ -382,9 +380,6 @@
       const button = document.getElementById('reachButton');
       if (newStatus === 'reach') {
         button.classList.add('active');
-        // リーチ音を再生
-        reachSound.currentTime = 0;
-        reachSound.play().catch(e => console.log('音声再生エラー:', e));
         showNotification('リーチを申告しました!');
       } else {
         button.classList.remove('active');
@@ -401,9 +396,6 @@
       const button = document.getElementById('bingoButton');
       if (newStatus === 'bingo') {
         button.classList.add('active');
-        // ビンゴ音を再生
-        bingoSound.currentTime = 0;
-        bingoSound.play().catch(e => console.log('音声再生エラー:', e));
         showNotification('🎉 ビンゴを申告しました! 🎉');
       } else {
         button.classList.remove('active');

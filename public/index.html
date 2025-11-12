@@ -387,6 +387,8 @@
     const slotSound = new Audio('/sounds/empty-machine-gun-firing-clicks-341988.mp3');
     slotSound.loop = true;
     const resultSound = new Audio('/sounds/cash-register-purchase-87313.mp3');
+    const reachSound = new Audio('/sounds/notification-22-270130.mp3');
+    const bingoSound = new Audio('/sounds/loud-fanfare-trumpet-effect-02-412049.mp3');
 
     socket.emit('join_session', { sessionId, isHost: true });
 
@@ -509,6 +511,13 @@
       // ビンゴ時にポップアップ表示
       if (data.status === 'bingo') {
         showBingoPopup(data.name);
+        // ビンゴ音を再生
+        bingoSound.currentTime = 0;
+        bingoSound.play().catch(e => console.log('音声再生エラー:', e));
+      } else if (data.status === 'reach') {
+        // リーチ音を再生
+        reachSound.currentTime = 0;
+        reachSound.play().catch(e => console.log('音声再生エラー:', e));
       }
       socket.emit('join_session', { sessionId, isHost: true });
     });
