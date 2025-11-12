@@ -141,10 +141,25 @@ io.on('connection', (socket) => {
     const session = gameSessions.get(sessionId);
     
     if (session) {
+      // ユーザー名のバリデーション
+      const sanitizedName = name.trim().substring(0, 20);
+      
+      // 空白のみ、または空文字の場合はデフォルト名
+      if (!sanitizedName || sanitizedName.length === 0) {
+        socket.emit('join_error', { message: '名前を入力してください' });
+        return;
+      }
+      
+      // HTMLタグを含む場合は拒否
+      if (/<[^>]*>/g.test(sanitizedName)) {
+        socket.emit('join_error', { message: '特殊文字は使用できません' });
+        return;
+      }
+      
       const playerId = socket.id;
       const player = {
         id: playerId,
-        name,
+        name: sanitizedName,
         status: null,
         joinedAt: new Date().toISOString()
       };

@@ -327,6 +327,11 @@
       showNotification('参加しました!');
     });
 
+    // 参加エラー
+    socket.on('join_error', (data) => {
+      showNotification(data.message);
+    });
+
     // セッション状態受信
     socket.on('session_state', (session) => {
       updateHistory(session.pickedNumbers);
