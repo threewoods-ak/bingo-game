@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ビンゴ - プレイヤー画面</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    body.dark {
+      background: #1a1a2e;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 2em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .name-input-section {
+      text-align: center;
+    }
+
+    .name-input-section h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.2em;
+      border: 2px solid #667eea;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .join-button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.3em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .join-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .join-button:active {
+      transform: translateY(0);
+    }
+
+    .player-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .player-name {
+      font-size: 1.5em;
+      color: #667eea;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .current-number-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .current-number-label {
+      font-size: 1em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .current-number {
+      font-size: 4em;
+      font-weight: bold;
+      color: #ff6b6b;
+      animation: pop 0.5s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .buttons-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .action-button {
+      flex: 1;
+      padding: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .reach-button {
+      background: #ffd93d;
+      color: #333;
+    }
+
+    .reach-button.active {
+      background: #ffaa00;
+      transform: scale(0.95);
+    }
+
+    .bingo-button {
+      background: #6bcf7f;
+      color: white;
+    }
+
+    .bingo-button.active {
+      background: #4caf50;
+      animation: celebrate 0.5s infinite;
+    }
+
+    @keyframes celebrate {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+
+    .action-button:active {
+      transform: scale(0.95);
+    }
+
+    .history-section h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    .history-numbers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .history-number {
+      min-width: 45px;
+      padding: 10px;
+      text-align: center;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .history-number:first-child {
+      background: #667eea;
+      color: white;
+    }
+
+    .waiting-message {
+      text-align: center;
+      color: #666;
+      font-size: 1.2em;
+      padding: 20px;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translate(-50%, -100%); }
+      to { transform: translate(-50%, 0); }
+    }
+
+    @media (max-width: 480px) {
+      .current-number {
+        font-size: 3em;
+      }
+
+      .action-button {
+        font-size: 1.1em;
+        padding: 15px;
+      }
+
+      .history-number {
+        min-width: 40px;
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body class="party">
+  <div class="container">
+    <div class="header">
+      <h1>🎮 ビンゴゲーム 🎮</h1>
+    </div>
+
+    <div id="nameInputSection" class="card name-input-section">
+      <h2>参加者名を入力</h2>
+      <input type="text" id="nameInput" class="name-input" placeholder="あなたの名前" maxlength="20">
+      <button id="joinButton" class="join-button">参加する</button>
+    </div>
+
+    <div id="gameSection" style="display: none;">
+      <div class="card">
+        <div class="player-info">
+          <div class="player-name" id="playerName"></div>
+        </div>
+
+        <div class="current-number-section">
+          <div class="current-number-label">現在の数字</div>
+          <div class="current-number" id="currentNumber">-</div>
+        </div>
+
+        <div class="buttons-section">
+          <button class="action-button reach-button" id="reachButton">
+            リーチ!
+          </button>
+          <button class="action-button bingo-button" id="bingoButton">
+            ビンゴ!
+          </button>
+        </div>
+      </div>
+
+      <div class="card history-section">
+        <h3>履歴</h3>
+        <div class="history-numbers" id="historyNumbers">
+          <div class="waiting-message">数字が出るまでお待ちください</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session') || 'default';
+    let playerId = null;
+    let playerName = '';
+    let currentStatus = null;
+
+    // 音声要素の作成
+    const resultSound = new Audio('/sounds/cash-register-purchase-87313.mp3');
+    const reachSound = new Audio('/sounds/notification-22-270130.mp3');
+    const bingoSound = new Audio('/sounds/loud-fanfare-trumpet-effect-02-412049.mp3');
+
+    // 参加ボタン
+    document.getElementById('joinButton').addEventListener('click', () => {
+      const name = document.getElementById('nameInput').value.trim();
+      
+      if (name.length === 0) {
+        showNotification('名前を入力してください');
+        return;
+      }
+      
+      if (name.length > 20) {
+        showNotification('名前は20文字以内にしてください');
+        return;
+      }
+
+      playerName = name;
+      socket.emit('join_session', { sessionId, isHost: false });
+      socket.emit('player_join', { sessionId, name });
+    });
+
+    // Enterキーで参加
+    document.getElementById('nameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('joinButton').click();
+      }
+    });
+
+    // プレイヤー登録完了
+    socket.on('player_registered', (data) => {
+      playerId = data.playerId;
+      document.getElementById('nameInputSection').style.display = 'none';
+      document.getElementById('gameSection').style.display = 'block';
+      document.getElementById('playerName').textContent = playerName;
+      showNotification('参加しました!');
+    });
+
+    // セッション状態受信
+    socket.on('session_state', (session) => {
+      updateHistory(session.pickedNumbers);
+      if (session.theme) {
+        document.body.className = session.theme;
+      }
+    });
+
+    // 数字ピック受信
+    socket.on('number_picked', (data) => {
+      const { calculation, pickedNumbers } = data;
+      const num = calculation.result;
+      
+      // 現在の数字更新
+      const currentNumEl = document.getElementById('currentNumber');
+      currentNumEl.textContent = num;
+      currentNumEl.style.animation = 'none';
+      setTimeout(() => {
+        currentNumEl.style.animation = 'pop 0.5s ease-out';
+      }, 10);
+      
+      // 履歴更新
+      updateHistory(pickedNumbers);
+      
+      // 結果確定音を再生
+      resultSound.currentTime = 0;
+      resultSound.play().catch(e => console.log('音声再生エラー:', e));
+      
+      showNotification(`新しい数字: ${num}`);
+    });
+
+    function updateHistory(numbers) {
+      const historyDiv = document.getElementById('historyNumbers');
+      
+      if (numbers.length === 0) {
+        historyDiv.innerHTML = '<div class="waiting-message">数字が出るまでお待ちください</div>';
+        return;
+      }
+      
+      historyDiv.innerHTML = numbers.slice().reverse().map(n => 
+        `<div class="history-number">${n}</div>`
+      ).join('');
+    }
+
+    // リーチボタン
+    document.getElementById('reachButton').addEventListener('click', () => {
+      const newStatus = currentStatus === 'reach' ? null : 'reach';
+      currentStatus = newStatus;
+      socket.emit('status_change', { status: newStatus });
+      
+      const button = document.getElementById('reachButton');
+      if (newStatus === 'reach') {
+        button.classList.add('active');
+        // リーチ音を再生
+        reachSound.currentTime = 0;
+        reachSound.play().catch(e => console.log('音声再生エラー:', e));
+        showNotification('リーチを申告しました!');
+      } else {
+        button.classList.remove('active');
+        showNotification('リーチを取り消しました');
+      }
+    });
+
+    // ビンゴボタン
+    document.getElementById('bingoButton').addEventListener('click', () => {
+      const newStatus = currentStatus === 'bingo' ? null : 'bingo';
+      currentStatus = newStatus;
+      socket.emit('status_change', { status: newStatus });
+      
+      const button = document.getElementById('bingoButton');
+      if (newStatus === 'bingo') {
+        button.classList.add('active');
+        // ビンゴ音を再生
+        bingoSound.currentTime = 0;
+        bingoSound.play().catch(e => console.log('音声再生エラー:', e));
+        showNotification('🎉 ビンゴを申告しました! 🎉');
+      } else {
+        button.classList.remove('active');
+        showNotification('ビンゴを取り消しました');
+      }
+    });
+
+    // ゲームリセット
+    socket.on('game_reset', () => {
+      document.getElementById('currentNumber').textContent = '-';
+      updateHistory([]);
+      currentStatus = null;
+      document.getElementById('reachButton').classList.remove('active');
+      document.getElementById('bingoButton').classList.remove('active');
+      showNotification('ゲームがリセットされました');
+    });
+
+    // テーマ変更
+    socket.on('theme_changed', (data) => {
+      document.body.className = data.theme;
+    });
+
+    // 他のプレイヤーのステータス変更通知
+    socket.on('player_status_changed', (data) => {
+      if (data.playerId !== playerId) {
+        if (data.status === 'reach') {
+          showNotification(`${data.name} さんがリーチ!`);
+        } else if (data.status === 'bingo') {
+          showNotification(`🎉 ${data.name} さんがビンゴ! 🎉`);
+        }
+      }
+    });
+
+    // 通知表示
+    function showNotification(message) {
+      const existing = document.querySelector('.notification');
+      if (existing) {
+        existing.remove();
+      }
+
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // 再接続処理
+    socket.on('connect', () => {
+      if (playerId) {
+        socket.emit('join_session', { sessionId, isHost: false });
+      }
+    });
+
+    socket.on('disconnect', () => {
+      showNotification('接続が切れました。再接続中...');
+    });
+  </script>
+</body>
+</html>

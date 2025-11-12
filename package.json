@@ -1,0 +1,19 @@
+{
+  "name": "bingo-game",
+  "version": "1.0.0",
+  "description": "計算式スロットで数字をピックする新感覚ビンゴ。QRでスマホから参加して、リーチ・ビンゴを自己申告できる。",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  }
+}
