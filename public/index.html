@@ -499,7 +499,6 @@
     document.getElementById('pickButton').addEventListener('click', () => {
       if (!isAnimating) {
         const delay = parseInt(document.getElementById('animationDelay').value) || 500;
-        console.log('送信するアニメーション間隔:', delay);
         socket.emit('pick_number', { animationDelay: delay });
       }
     });
@@ -510,7 +509,6 @@
       document.getElementById('pickButton').disabled = true;
       
       const { calculation, pickedNumbers, remaining, animationDelay = 500 } = data;
-      console.log('受信したアニメーション間隔:', animationDelay);
       
       // 結果表示をデフォルトに戻す
       document.getElementById('result').textContent = '= ??';
