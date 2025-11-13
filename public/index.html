@@ -392,7 +392,7 @@
         <span>?</span>
         <span>?</span>
         <span>?</span>
-        <span class="result" id="result"></span>
+        <span class="result" id="result">= ??</span>
       </div>
       <button class="pick-button" id="pickButton">数字をピック</button>
       <div class="controls">
@@ -461,8 +461,8 @@
       
       const { calculation, pickedNumbers, remaining, animationDelay = 500 } = data;
       
-      // 結果表示をクリア
-      document.getElementById('result').textContent = '';
+      // 結果表示をデフォルトに戻す
+      document.getElementById('result').textContent = '= ??';
       
       // スロットアニメーション（音声付き）
       await animateSlotSequential(calculation, animationDelay);
@@ -492,7 +492,7 @@
         <span class="slot-item" id="slot-x">?</span>
         <span class="slot-item" id="slot-op">?</span>
         <span class="slot-item" id="slot-z">?</span>
-        <span class="result" id="result"></span>
+        <span class="result" id="result">= ??</span>
       `;
       
       // 1. 左の数字をランダム表示してから確定
