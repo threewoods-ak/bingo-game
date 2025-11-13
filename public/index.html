@@ -128,7 +128,9 @@
       display: flex;
       gap: 10px;
       justify-content: center;
+      align-items: center;
       margin-top: 20px;
+      flex-wrap: wrap;
     }
 
     .control-button {
@@ -138,6 +140,32 @@
       cursor: pointer;
       font-size: 1em;
       transition: background 0.2s;
+    }
+
+    .animation-delay-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+    }
+
+    .animation-delay-control label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .animation-delay-control input {
+      width: 80px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .animation-delay-control span {
+      color: #666;
     }
 
     .reset-button {
@@ -399,6 +427,11 @@
       </div>
       <button class="pick-button" id="pickButton">数字をピック</button>
       <div class="controls">
+        <div class="animation-delay-control">
+          <label for="animationDelay">アニメーション間隔:</label>
+          <input type="number" id="animationDelay" min="100" max="2000" step="100" value="500">
+          <span>ms</span>
+        </div>
         <button class="control-button reset-button" id="resetButton">ゲームリセット</button>
         <button class="control-button theme-button" id="themeButton">テーマ切替</button>
       </div>
@@ -453,7 +486,8 @@
     // 数字ピック
     document.getElementById('pickButton').addEventListener('click', () => {
       if (!isAnimating) {
-        socket.emit('pick_number');
+        const delay = parseInt(document.getElementById('animationDelay').value) || 500;
+        socket.emit('pick_number', { animationDelay: delay });
       }
     });
 
