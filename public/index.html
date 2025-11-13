@@ -459,6 +459,9 @@
       
       const { calculation, pickedNumbers, remaining, animationDelay = 500 } = data;
       
+      // 結果表示をクリア
+      document.getElementById('result').textContent = '';
+      
       // スロットアニメーション（音声付き）
       await animateSlotSequential(calculation, animationDelay);
       
@@ -482,14 +485,14 @@
       slotSound.currentTime = 0;
       slotSound.play().catch(e => console.log('音声再生エラー:', e));
       
-      // 1. 左の数字を確定
+      // 初期状態: すべて「?」にリセット
       display.innerHTML = `
         <span class="slot-item" id="slot-x">?</span>
         <span class="slot-item" id="slot-op">?</span>
         <span class="slot-item" id="slot-z">?</span>
       `;
       
-      // 左の数字をランダム表示してから確定
+      // 1. 左の数字をランダム表示してから確定
       for (let i = 0; i < 5; i++) {
         document.getElementById('slot-x').textContent = Math.floor(Math.random() * 75) + 1;
         await sleep(100);
@@ -497,7 +500,7 @@
       document.getElementById('slot-x').textContent = calc.x;
       await sleep(delay);
       
-      // 2. 演算子を確定
+      // 2. 演算子をランダム表示してから確定
       for (let i = 0; i < 5; i++) {
         document.getElementById('slot-op').textContent = ['+', '-', '×', '÷'][Math.floor(Math.random() * 4)];
         await sleep(100);
@@ -505,7 +508,7 @@
       document.getElementById('slot-op').textContent = calc.operator;
       await sleep(delay);
       
-      // 3. 右の数字を確定
+      // 3. 右の数字をランダム表示してから確定
       for (let i = 0; i < 5; i++) {
         document.getElementById('slot-z').textContent = Math.floor(Math.random() * 75) + 1;
         await sleep(100);
