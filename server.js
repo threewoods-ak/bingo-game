@@ -176,7 +176,9 @@ io.on('connection', (socket) => {
   socket.on('pick_number', (data) => {
     const sessionId = socket.sessionId;
     const session = gameSessions.get(sessionId);
+    console.log('サーバー受信データ:', data);
     const animationDelay = data?.animationDelay || 500;
+    console.log('サーバー側アニメーション間隔:', animationDelay);
 
     if (session && socket.isHost) {
       const calculation = generateNumber(session.pickedNumbers);
