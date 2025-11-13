@@ -268,6 +268,9 @@
     .history-section h2 {
       color: #667eea;
       margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .history-numbers {
@@ -285,9 +288,10 @@
     }
 
     .remaining {
-      margin-top: 15px;
-      font-size: 1.2em;
+      font-size: 0.9em;
       color: #666;
+      font-weight: normal;
+    }
     }
 
     .bingo-popup {
@@ -479,9 +483,11 @@
 
       <!-- 左下: 履歴 -->
       <div class="grid-item history-section">
-        <h2>履歴</h2>
+        <h2>
+          <span>履歴</span>
+          <span class="remaining" id="remaining">残り: 75個</span>
+        </h2>
         <div class="history-numbers" id="historyNumbers"></div>
-        <div class="remaining" id="remaining">残り: 75個</div>
       </div>
 
       <!-- 右下: 参加者 -->
