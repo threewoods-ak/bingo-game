@@ -87,10 +87,9 @@
     }
 
     .result {
-      font-size: 3em;
+      font-size: 4em;
       color: #ff6b6b;
       font-weight: bold;
-      margin: 20px 0;
     }
 
     .pick-button {
@@ -390,8 +389,8 @@
         <span>?</span>
         <span>?</span>
         <span>?</span>
+        <span class="result" id="result"></span>
       </div>
-      <div class="result" id="result"></div>
       <button class="pick-button" id="pickButton">数字をピック</button>
       <div class="controls">
         <button class="control-button reset-button" id="resetButton">ゲームリセット</button>
@@ -490,6 +489,7 @@
         <span class="slot-item" id="slot-x">?</span>
         <span class="slot-item" id="slot-op">?</span>
         <span class="slot-item" id="slot-z">?</span>
+        <span class="result" id="result"></span>
       `;
       
       // 1. 左の数字をランダム表示してから確定
