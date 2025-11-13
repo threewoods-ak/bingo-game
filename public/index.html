@@ -52,6 +52,17 @@
       text-align: center;
     }
 
+    .qr-section h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .qr-trademark {
+      font-size: 0.75em;
+      color: #999;
+      margin-top: 5px;
+    }
+
     #qrcode {
       margin: 20px auto;
     }
@@ -79,6 +90,9 @@
 
     .slot-item {
       animation: spin 0.3s ease-in-out;
+      min-width: 1.2em;
+      text-align: center;
+      display: inline-block;
     }
 
     @keyframes spin {
@@ -87,10 +101,12 @@
     }
 
     .result {
-      font-size: 3em;
+      font-size: 1.1em;
       color: #ff6b6b;
       font-weight: bold;
-      margin: 20px 0;
+      min-width: 3.5em;
+      text-align: left;
+      display: inline-block;
     }
 
     .pick-button {
@@ -123,7 +139,9 @@
       display: flex;
       gap: 10px;
       justify-content: center;
+      align-items: center;
       margin-top: 20px;
+      flex-wrap: wrap;
     }
 
     .control-button {
@@ -133,6 +151,32 @@
       cursor: pointer;
       font-size: 1em;
       transition: background 0.2s;
+    }
+
+    .animation-delay-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+    }
+
+    .animation-delay-control label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .animation-delay-control input {
+      width: 80px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .animation-delay-control span {
+      color: #666;
     }
 
     .reset-button {
@@ -381,6 +425,7 @@
 
     <div class="qr-section">
       <h3>スマホでQRコードを読み取って参加</h3>
+      <p class="qr-trademark">※QRコードは株式会社デンソーウェーブの登録商標です。</p>
       <div id="qrcode"></div>
       <div id="url"></div>
     </div>
@@ -390,10 +435,15 @@
         <span>?</span>
         <span>?</span>
         <span>?</span>
+        <span class="result" id="result">= ??</span>
       </div>
-      <div class="result" id="result"></div>
       <button class="pick-button" id="pickButton">数字をピック</button>
       <div class="controls">
+        <div class="animation-delay-control">
+          <label for="animationDelay">アニメーション間隔:</label>
+          <input type="number" id="animationDelay" min="100" max="2000" step="100" value="500" title="100～2000msの範囲で設定できます">
+          <span>ms</span>
+        </div>
         <button class="control-button reset-button" id="resetButton">ゲームリセット</button>
         <button class="control-button theme-button" id="themeButton">テーマ切替</button>
       </div>
@@ -448,7 +498,8 @@
     // 数字ピック
     document.getElementById('pickButton').addEventListener('click', () => {
       if (!isAnimating) {
-        socket.emit('pick_number');
+        const delay = parseInt(document.getElementById('animationDelay').value) || 500;
+        socket.emit('pick_number', { animationDelay: delay });
       }
     });
 
@@ -457,10 +508,13 @@
       isAnimating = true;
       document.getElementById('pickButton').disabled = true;
       
-      const { calculation, pickedNumbers, remaining } = data;
+      const { calculation, pickedNumbers, remaining, animationDelay = 500 } = data;
+      
+      // 結果表示をデフォルトに戻す
+      document.getElementById('result').textContent = '= ??';
       
       // スロットアニメーション（音声付き）
-      await animateSlot(calculation);
+      await animateSlotSequential(calculation, animationDelay);
       
       // 結果表示
       document.getElementById('result').textContent = `= ${calculation.result}`;
@@ -475,29 +529,47 @@
       }, 1000);
     });
 
-    async function animateSlot(calc) {
+    async function animateSlotSequential(calc, delay) {
       const display = document.getElementById('slotDisplay');
       
       // スロット回転音を再生
       slotSound.currentTime = 0;
       slotSound.play().catch(e => console.log('音声再生エラー:', e));
       
-      // スロット回転
-      for (let i = 0; i < 5; i++) {
-        display.innerHTML = `
-          <span class="slot-item">${Math.floor(Math.random() * 75) + 1}</span>
-          <span class="slot-item">${['+', '-', '×', '÷'][Math.floor(Math.random() * 4)]}</span>
-          <span class="slot-item">${Math.floor(Math.random() * 75) + 1}</span>
-        `;
-        await sleep(200);
-      }
-      
-      // 最終結果
+      // 初期状態: すべて「?」にリセット
       display.innerHTML = `
-        <span class="slot-item">${calc.x}</span>
-        <span class="slot-item">${calc.operator}</span>
-        <span class="slot-item">${calc.z}</span>
+        <span class="slot-item" id="slot-x">?</span>
+        <span class="slot-item" id="slot-op">?</span>
+        <span class="slot-item" id="slot-z">?</span>
+        <span class="result" id="result">= ??</span>
       `;
+      
+      // 1. 左の数字を設定時間ランダム表示してから確定
+      const startTime1 = Date.now();
+      while (Date.now() - startTime1 < delay) {
+        document.getElementById('slot-x').textContent = Math.floor(Math.random() * 75) + 1;
+        await sleep(50);
+      }
+      document.getElementById('slot-x').textContent = calc.x;
+      await sleep(100);
+      
+      // 2. 演算子を設定時間ランダム表示してから確定
+      const startTime2 = Date.now();
+      while (Date.now() - startTime2 < delay) {
+        document.getElementById('slot-op').textContent = ['+', '-', '×', '÷'][Math.floor(Math.random() * 4)];
+        await sleep(50);
+      }
+      document.getElementById('slot-op').textContent = calc.operator;
+      await sleep(100);
+      
+      // 3. 右の数字を設定時間ランダム表示してから確定
+      const startTime3 = Date.now();
+      while (Date.now() - startTime3 < delay) {
+        document.getElementById('slot-z').textContent = Math.floor(Math.random() * 75) + 1;
+        await sleep(50);
+      }
+      document.getElementById('slot-z').textContent = calc.z;
+      await sleep(100);
       
       // スロット音を停止
       slotSound.pause();
