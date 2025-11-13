@@ -8,6 +8,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+// 環境変数: スロットアニメーション間隔（ミリ秒）
+const SLOT_ANIMATION_DELAY = parseInt(process.env.SLOT_ANIMATION_DELAY || '500');
+
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -185,7 +188,8 @@ io.on('connection', (socket) => {
         io.to(sessionId).emit('number_picked', {
           calculation,
           pickedNumbers: session.pickedNumbers,
-          remaining: 75 - session.pickedNumbers.length
+          remaining: 75 - session.pickedNumbers.length,
+          animationDelay: SLOT_ANIMATION_DELAY
         });
       } else {
         io.to(sessionId).emit('game_complete');

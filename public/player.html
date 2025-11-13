@@ -341,9 +341,12 @@
     });
 
     // 数字ピック受信
-    socket.on('number_picked', (data) => {
-      const { calculation, pickedNumbers } = data;
+    socket.on('number_picked', async (data) => {
+      const { calculation, pickedNumbers, animationDelay = 500 } = data;
       const num = calculation.result;
+      
+      // アニメーション完了を待ってから数字を表示
+      await sleep(animationDelay * 3 + 1500); // 3ステップ + アニメーション時間
       
       // 現在の数字更新
       const currentNumEl = document.getElementById('currentNumber');
@@ -362,6 +365,10 @@
       
       showNotification(`新しい数字: ${num}`);
     });
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     function updateHistory(numbers) {
       const historyDiv = document.getElementById('historyNumbers');
