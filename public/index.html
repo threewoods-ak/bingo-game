@@ -295,18 +295,18 @@
     }
 
     .bingo-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) scale(0) !important;
       background: linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%);
       color: white;
       padding: 40px 60px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      z-index: 10000;
+      z-index: 10000 !important;
       text-align: center;
-      animation: popupShow 0.5s ease-out forwards;
+      animation: popupShow 0.5s ease-out forwards !important;
     }
 
     .reach-popup {
@@ -715,6 +715,18 @@
       // ポップアップ作成
       const popup = document.createElement('div');
       popup.className = 'bingo-popup';
+      popup.style.position = 'fixed';
+      popup.style.top = '50%';
+      popup.style.left = '50%';
+      popup.style.transform = 'translate(-50%, -50%) scale(0)';
+      popup.style.background = 'linear-gradient(135deg, #6bcf7f 0%, #4caf50 100%)';
+      popup.style.color = 'white';
+      popup.style.padding = '40px 60px';
+      popup.style.borderRadius = '20px';
+      popup.style.boxShadow = '0 20px 60px rgba(0,0,0,0.4)';
+      popup.style.zIndex = '10000';
+      popup.style.textAlign = 'center';
+      popup.style.animation = 'popupShow 0.5s ease-out forwards';
       popup.innerHTML = `
         <h2>🎉 BINGO! 🎉</h2>
         <p>${escapeHtml(playerName)} さん</p>
