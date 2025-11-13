@@ -47,7 +47,7 @@
     .grid-container {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto auto 1fr;
       gap: 20px;
       height: calc(100vh - 150px);
     }
@@ -60,8 +60,24 @@
       overflow-y: auto;
     }
 
+    /* スロットを2倍の高さに */
+    .slot-container {
+      grid-row: span 2;
+    }
+
+    /* QRコードは右上（影響なし） */
     .qr-section {
       text-align: center;
+    }
+
+    /* 履歴は最小限の高さ */
+    .history-section {
+      grid-row: 3;
+    }
+
+    /* 参加者は右下（残りの高さ） */
+    .players-section {
+      grid-row: 2 / 4;
     }
 
     .qr-section h3 {
