@@ -50,3 +50,7 @@ temp/
 
 # Copilot profile (contains personal GitHub username)
 .copilot-profile
+
+# Issue automation
+logs/
+.last_issue_check
