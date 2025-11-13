@@ -544,29 +544,32 @@
         <span class="result" id="result">= ??</span>
       `;
       
-      // 1. 左の数字をランダム表示してから確定
-      for (let i = 0; i < 5; i++) {
+      // 1. 左の数字を設定時間ランダム表示してから確定
+      const startTime1 = Date.now();
+      while (Date.now() - startTime1 < delay) {
         document.getElementById('slot-x').textContent = Math.floor(Math.random() * 75) + 1;
-        await sleep(100);
+        await sleep(50);
       }
       document.getElementById('slot-x').textContent = calc.x;
-      await sleep(delay);
+      await sleep(100);
       
-      // 2. 演算子をランダム表示してから確定
-      for (let i = 0; i < 5; i++) {
+      // 2. 演算子を設定時間ランダム表示してから確定
+      const startTime2 = Date.now();
+      while (Date.now() - startTime2 < delay) {
         document.getElementById('slot-op').textContent = ['+', '-', '×', '÷'][Math.floor(Math.random() * 4)];
-        await sleep(100);
+        await sleep(50);
       }
       document.getElementById('slot-op').textContent = calc.operator;
-      await sleep(delay);
+      await sleep(100);
       
-      // 3. 右の数字をランダム表示してから確定
-      for (let i = 0; i < 5; i++) {
+      // 3. 右の数字を設定時間ランダム表示してから確定
+      const startTime3 = Date.now();
+      while (Date.now() - startTime3 < delay) {
         document.getElementById('slot-z').textContent = Math.floor(Math.random() * 75) + 1;
-        await sleep(100);
+        await sleep(50);
       }
       document.getElementById('slot-z').textContent = calc.z;
-      await sleep(delay);
+      await sleep(100);
       
       // スロット音を停止
       slotSound.pause();
